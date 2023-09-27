@@ -72,16 +72,20 @@ fn get_coord(maze: &Vec<Vec<Cell>>, cell: &Cell) -> (usize, usize) {
 }
 
 fn maze_gen(maze: &mut Vec<Vec<Cell>>) {
+    let height = maze.len()-1;
+    let width = maze[0].len()-1;
     let mut rng = rand::thread_rng();
-    let mut cell_todo: Vec<&mut Cell> = Vec::new();
-    for row in &mut *maze { for cell in row { cell_todo.push(cell); } }
+    let mut cell_todo: Vec<(usize, usize)> = Vec::new();
+    for y in 0..height { for x in 0..width { cell_todo.push((x, y)); } }
     while cell_todo.len() > 0 {
         let i = rng.gen_range(0..cell_todo.len());
-        let cell : &mut Cell = cell_todo.remove(i);
-        let (x, y) = get_coord(&maze, cell);
-        if x != maze[0].len()-1 && rng.gen() { cell.open("east"); }
-        if y != maze.len()-1 && rng.gen() { cell.open("south"); }
+        let (x, y) = cell_todo[i];
+        let mut cell = &mut maze[y][x];
+        if x != width && rng.gen() { cell.open("east"); }
+        if y != height && rng.gen() { cell.open("south"); }
+        cell_todo.remove(i);
     }
+
 }
 
 fn main() {
